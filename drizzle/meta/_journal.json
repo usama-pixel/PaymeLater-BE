@@ -1,0 +1,27 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1711480037196,
+      "tag": "0000_wakeful_night_nurse",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1711480098710,
+      "tag": "0001_watery_jackal",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1711481599513,
+      "tag": "0002_abandoned_steve_rogers",
+      "breakpoints": true
+    }
+  ]
+}
