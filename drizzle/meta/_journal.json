@@ -22,6 +22,20 @@
       "when": 1711481599513,
       "tag": "0002_abandoned_steve_rogers",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1711485031547,
+      "tag": "0003_minor_clea",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "5",
+      "when": 1711486080608,
+      "tag": "0004_elite_guardsmen",
+      "breakpoints": true
     }
   ]
 }
