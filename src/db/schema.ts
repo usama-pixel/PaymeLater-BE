@@ -4,7 +4,8 @@ export const user = pgTable("users", {
     id: serial("id").primaryKey(),
     fullName: text("full_name"),
     email: text("email").unique(),
-    password: text("password")
+    password: text("password"),
+    profileUrl: text("profile_url")
     // phone: varchar("phone", {length: 256}),
     // address: text("address")
 })

@@ -22,30 +22,20 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+exports.db = void 0;
+const node_postgres_1 = require("drizzle-orm/node-postgres");
 const dotenv = __importStar(require("dotenv"));
-const auth_routes_1 = require("./routes/auth.routes");
-const passport_1 = __importDefault(require("passport"));
+const pg_1 = require("pg");
+const schema = __importStar(require("./schema"));
 dotenv.config();
-const app = (0, express_1.default)();
-app.use((err, req, res, next) => {
-    console.log({ err });
-    res.json("some error occured");
+const db_url = process.env.PG_URL;
+if (!db_url) {
+    throw new Error('Database url is null');
+}
+const client = new pg_1.Client({
+    connectionString: db_url
 });
-app.use(express_1.default.json());
-app.use(passport_1.default.initialize());
-// app.use(passport.initialize())
-app.use(auth_routes_1.router);
-// async function main() {
-//     await db.insert(user).values({fullName: "usama", email: "usama@gmail.com", address: "abc", phone: "090078601"})
-//     console.log('data inserted')
-// }
-// main().catch(err => console.log(err))
-app.listen(3000, () => {
-    console.log('listening on port 3000');
-});
-//# sourceMappingURL=server.js.map
+client.connect();
+exports.db = (0, node_postgres_1.drizzle)(client, { schema });
+//# sourceMappingURL=index.js.map

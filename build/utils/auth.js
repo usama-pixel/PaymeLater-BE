@@ -26,26 +26,28 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
-const dotenv = __importStar(require("dotenv"));
-const auth_routes_1 = require("./routes/auth.routes");
 const passport_1 = __importDefault(require("passport"));
+const passport_google_oauth2_1 = require("passport-google-oauth2");
+const dotenv = __importStar(require("dotenv"));
 dotenv.config();
-const app = (0, express_1.default)();
-app.use((err, req, res, next) => {
-    console.log({ err });
-    res.json("some error occured");
+const g_id = process.env.GOOGLE_CLIENT_ID;
+const g_secret = process.env.GOOGLE_CLIENT_SECRET;
+if (!g_id)
+    throw new Error('GOOGLE_CLIENT_ID is null or undefined');
+if (!g_secret)
+    throw new Error('GOOGLE_CLIENT_SECRET is null or undefined');
+passport_1.default.use(new passport_google_oauth2_1.Strategy({
+    clientID: g_id,
+    clientSecret: g_secret,
+    callbackURL: "http://localhost:3000/auth/google/callback",
+    passReqToCallback: true
+}, function (request, accessToken, refreshToken, profile, done) {
+    done(null, profile);
+}));
+passport_1.default.serializeUser((user, done) => {
+    done(null, user);
 });
-app.use(express_1.default.json());
-app.use(passport_1.default.initialize());
-// app.use(passport.initialize())
-app.use(auth_routes_1.router);
-// async function main() {
-//     await db.insert(user).values({fullName: "usama", email: "usama@gmail.com", address: "abc", phone: "090078601"})
-//     console.log('data inserted')
-// }
-// main().catch(err => console.log(err))
-app.listen(3000, () => {
-    console.log('listening on port 3000');
+passport_1.default.deserializeUser((user, done) => {
+    done(null, user);
 });
-//# sourceMappingURL=server.js.map
+//# sourceMappingURL=auth.js.map
