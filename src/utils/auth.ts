@@ -1,6 +1,8 @@
 import passport, { DoneCallback, Profile } from 'passport';
 import { Strategy as GoogleStrategy, Strategy, StrategyOptionsWithRequest } from 'passport-google-oauth2';
 import * as dotenv from 'dotenv'
+import * as jwt from 'jsonwebtoken'
+import { NextFunction, Request, Response } from 'express';
 dotenv.config()
 
 const g_id = process.env.GOOGLE_CLIENT_ID
@@ -28,5 +30,19 @@ passport.serializeUser((user, done) => {
 passport.deserializeUser((user: any, done) => {
   done(null, user)
 })
+
+
+export async function validateUser(req: Request, res: Response, next: NextFunction) {
+  try {
+    console.log("middle ware")
+    const token = req.headers.authorization?.split(' ')[1]
+    if (!token) throw new Error('Token not provided')
+    const data = jwt.verify(token, process.env.SECRET || 'secret')
+    req.user = data
+    next()
+  } catch(err) {
+    next(err)
+  }
+}
 
 export default passport

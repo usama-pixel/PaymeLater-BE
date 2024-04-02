@@ -35,66 +35,59 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const passport_1 = __importDefault(require("passport"));
+const cron = __importStar(require("node-cron"));
 const db_1 = require("../db");
 const schema_1 = require("../db/schema");
-const jwt = __importStar(require("jsonwebtoken"));
-function login() {
-    return __awaiter(this, void 0, void 0, function* () {
-    });
-}
-function signup(fullName, email, password) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (fullName === '' || email === '' || password === '') {
-            throw new Error('Please provide all the fields');
+const date_fns_1 = require("date-fns");
+const fs_1 = __importDefault(require("fs"));
+const nodemailer = __importStar(require("nodemailer"));
+// cron.schedule('* * * * *', () => {
+//     // This function will run every minute
+//     console.log('This runs every minute');
+// });
+cron.schedule('0 0 * * *', () => __awaiter(void 0, void 0, void 0, function* () {
+    console.log('script ran');
+    const content = `script ran at ${new Date()}\n`;
+    fs_1.default.writeFile('log.txt', content, { flag: 'a' }, err => {
+        if (err) {
+            console.log('Error while writing to log.txt');
+            return;
         }
-        if (!fullName || !email || !password) {
-            throw new Error('Please provide all the fields');
-        }
-        const res = yield db_1.db.insert(schema_1.users).values({ fullName, email, password });
-        // const res = await db.insert(user).values({fullName: "usama", email: "usama@gmail.com",password: 'abc'})
-        console.log(res);
-        return res;
     });
-}
-function googleLogin() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log('clicked');
-        passport_1.default.authenticate('google', {
-            scope: ['email', 'profile'],
-            session: false
+    const data = yield db_1.db.select().from(schema_1.clients);
+    for (let i = 0; i < data.length; i++) {
+        if (data[i] && data[i].deadline && (0, date_fns_1.isPast)(new Date(data[i].deadline + ''))) {
+            sendEmail(data[i].email, 'Default Usama', 'Payment Reminder', `Hi ${data[i].name}, Your deadline for bill is overdue. Your total amount to pay is ${data[i].amount}`);
+        }
+    }
+}));
+function sendEmail(toEmail, from, subject, msg) {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+    const details = {
+        from,
+        to: toEmail,
+        subject,
+        text: msg,
+    };
+    transporter.sendMail(details, (err) => {
+        if (err) {
+            console.log('Error occured while sending mail', err);
+            return;
+        }
+        console.log('email sent');
+        const content = `Email sent at ${new Date()}\n`;
+        fs_1.default.writeFile('log.txt', content, { flag: 'a' }, err => {
+            if (err) {
+                console.log('Error while writing to log.txt');
+                return;
+            }
         });
     });
 }
-function googleCallback() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log('callback');
-        passport_1.default.authenticate('google', {
-            successRedirect: '/auth/google/success',
-            failureRedirect: '/auth/google/failure',
-            session: false
-        });
-        // return 'cb'
-    });
-}
-function googleSuccess(token) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const data = jwt.verify(token, process.env.SECRET || 'secret');
-        // console.log({data})
-        return 'success usama';
-    });
-}
-function googleFailure() {
-    return __awaiter(this, void 0, void 0, function* () {
-        return 'failure bro';
-    });
-}
-exports.default = {
-    login,
-    signup,
-    googleLogin,
-    googleCallback,
-    googleSuccess,
-    googleFailure
-};
-//# sourceMappingURL=auth.service.js.map
+//# sourceMappingURL=cron-script.js.map

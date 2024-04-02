@@ -10,5 +10,4 @@ router.get("/auth/google", authController.googleLogin)
 router.get("/auth/google/callback", authController.googleCallback)
 router.get('/auth/google/success', isLoggedin, authController.googleSuccess)
 router.get('/auth/google/failure', authController.googleFailure)
-
-export default router
+router.post('/token', authController.token)

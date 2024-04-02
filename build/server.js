@@ -29,22 +29,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const dotenv = __importStar(require("dotenv"));
 const auth_routes_1 = require("./routes/auth.routes");
+const client_routes_1 = require("./routes/client.routes");
 const passport_1 = __importDefault(require("passport"));
+const cors_1 = __importDefault(require("cors"));
+const date_fns_1 = require("date-fns");
 dotenv.config();
+if ((0, date_fns_1.isPast)(new Date(2025, 1))) {
+    console.log('date is past');
+}
 const app = (0, express_1.default)();
+app.use((0, cors_1.default)());
 app.use((err, req, res, next) => {
     console.log({ err });
     res.json("some error occured");
 });
 app.use(express_1.default.json());
 app.use(passport_1.default.initialize());
-// app.use(passport.initialize())
 app.use(auth_routes_1.router);
-// async function main() {
-//     await db.insert(user).values({fullName: "usama", email: "usama@gmail.com", address: "abc", phone: "090078601"})
-//     console.log('data inserted')
-// }
-// main().catch(err => console.log(err))
+// app.use(validateUser)
+app.use(client_routes_1.router);
 app.listen(3000, () => {
     console.log('listening on port 3000');
 });

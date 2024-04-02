@@ -14,5 +14,5 @@ exports.router.get("/auth/google", auth_controller_1.default.googleLogin);
 exports.router.get("/auth/google/callback", auth_controller_1.default.googleCallback);
 exports.router.get('/auth/google/success', auth_1.isLoggedin, auth_controller_1.default.googleSuccess);
 exports.router.get('/auth/google/failure', auth_controller_1.default.googleFailure);
-exports.default = exports.router;
+exports.router.post('/token', auth_controller_1.default.token);
 //# sourceMappingURL=auth.routes.js.map

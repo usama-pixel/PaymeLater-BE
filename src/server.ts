@@ -1,11 +1,17 @@
 import express, { ErrorRequestHandler, NextFunction, Request, Response } from 'express'
 import * as dotenv from 'dotenv'
 import { router as authRouter } from './routes/auth.routes'
+import { router as clientRouter } from './routes/client.routes'
 import passport from 'passport'
-import passportSetup from './utils/auth'
+import passportSetup, { validateUser } from './utils/auth'
 
 import cors from 'cors'
+import { isPast } from 'date-fns'
 dotenv.config()
+
+if(isPast(new Date(2025, 1))) {
+    console.log('date is past')
+}
 
 const app = express()
 app.use(cors())
@@ -15,12 +21,10 @@ app.use((err: ErrorRequestHandler, req: Request, res: Response, next: NextFuncti
 })
 app.use(express.json())
 app.use(passport.initialize())
+
 app.use(authRouter)
-// async function main() {
-//     await db.insert(user).values({fullName: "usama", email: "usama@gmail.com", address: "abc", phone: "090078601"})
-//     console.log('data inserted')
-// }
-// main().catch(err => console.log(err))
+// app.use(validateUser)
+app.use(clientRouter)
 
 app.listen(3000, () => {
     console.log('listening on port 3000')
